@@ -27,7 +27,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_bloc: ^0.19.0
+  flutter_bloc: ^0.21.0
   meta: ^1.1.6
 
 dev_dependencies:
@@ -86,7 +86,7 @@ Now that we have our `CounterBloc` fully implemented, we can get started creatin
 ```dart
 void main() => runApp(MyApp());
 
-class App extends StatelessWidget {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -110,13 +110,12 @@ Finally, all that's left is to build our Counter Page.
 class CounterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final CounterBloc _counterBloc = BlocProvider.of<CounterBloc>(context);
+    final CounterBloc counterBloc = BlocProvider.of<CounterBloc>(context);
 
     return Scaffold(
       appBar: AppBar(title: Text('Counter')),
-      body: BlocBuilder<CounterEvent, int>(
-        bloc: _counterBloc,
-        builder: (BuildContext context, int count) {
+      body: BlocBuilder<CounterBloc, int>(
+        builder: (context, count) {
           return Center(
             child: Text(
               '$count',
@@ -134,7 +133,7 @@ class CounterPage extends StatelessWidget {
             child: FloatingActionButton(
               child: Icon(Icons.add),
               onPressed: () {
-                _counterBloc.dispatch(CounterEvent.increment);
+                counterBloc.dispatch(CounterEvent.increment);
               },
             ),
           ),
@@ -143,7 +142,7 @@ class CounterPage extends StatelessWidget {
             child: FloatingActionButton(
               child: Icon(Icons.remove),
               onPressed: () {
-                _counterBloc.dispatch(CounterEvent.decrement);
+                counterBloc.dispatch(CounterEvent.decrement);
               },
             ),
           ),
@@ -157,6 +156,10 @@ class CounterPage extends StatelessWidget {
 ?> **Note**: We are able to access the `CounterBloc` instance using `BlocProvider.of<CounterBloc>(context)` because we wrapped our `CounterPage` in a `BlocProvider`.
 
 ?> **Note**: We are using the `BlocBuilder` widget from `flutter_bloc` in order to rebuild our UI in response to state changes (changes in the counter value).
+
+?> **Note**: `BlocBuilder` takes an optional `bloc` parameter but we can specify the type of the bloc and the type of the state and `BlocBuilder` will find the bloc automatically so we don't need to explicity use `BlocProvider.of<CounterBloc>(context)`.
+
+!> Only specify the bloc in `BlocBuilder` if you wish to provide a bloc that will be scoped to a single widget and isn't accessible via a parent `BlocProvider` and the current `BuildContext`.
 
 That's it! We've separated our presentation layer from our business logic layer. Our `CounterPage` has no idea what happens when a user presses a button; it just dispatches an event to notify the `CounterBloc`. Furthermore, our `CounterBloc` has no idea what is happening with the state (counter value); it's simply converting the `CounterEvents` into integers.
 

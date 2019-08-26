@@ -26,7 +26,7 @@ environment:
 dependencies:
   meta: ">=1.1.0 <2.0.0"
   equatable: ^0.2.0
-  flutter_bloc: ^0.19.0
+  flutter_bloc: ^0.21.0
   flutter:
     sdk: flutter
 
@@ -183,7 +183,7 @@ class Todo extends Equatable {
 }
 ```
 
-?> **Note:** We're using the [Equatable](https://pub.dartlang.org/packages/equatable) package so that we can compare instances of `Todos` without having to manually override `==` and `hashCode`.
+?> **Note:** We're using the [Equatable](https://pub.dev/packages/equatable) package so that we can compare instances of `Todos` without having to manually override `==` and `hashCode`.
 
 Next up, we need to create the `TodosState` which our presentation layer will receive.
 
@@ -904,9 +904,8 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tabBloc = BlocProvider.of<TabBloc>(context);
-    return BlocBuilder(
-      bloc: tabBloc,
-      builder: (BuildContext context, AppTab activeTab) {
+    return BlocBuilder<TabBloc, AppTab>(
+      builder: (context, activeTab) {
         return Scaffold(
           appBar: AppBar(
             title: Text(FlutterBlocLocalizations.of(context).appTitle),
@@ -963,8 +962,7 @@ class DetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final todosBloc = BlocProvider.of<TodosBloc>(context);
-    return BlocBuilder(
-      bloc: todosBloc,
+    return BlocBuilder<TodosBloc, TodosState>(
       builder: (BuildContext context, TodosState state) {
         final todo = (state as TodosLoaded)
             .todos
@@ -1232,9 +1230,8 @@ class FilterButton extends StatelessWidget {
         .copyWith(color: Theme.of(context).accentColor);
     final FilteredTodosBloc filteredTodosBloc =
         BlocProvider.of<FilteredTodosBloc>(context);
-    return BlocBuilder(
-        bloc: filteredTodosBloc,
-        builder: (BuildContext context, FilteredTodosState state) {
+    return BlocBuilder<FilteredTodosBloc, FilteredTodosState>(
+        builder: (context, state) {
           final button = _Button(
             onSelected: (filter) {
               filteredTodosBloc.dispatch(UpdateFilter(filter));
@@ -1348,9 +1345,8 @@ class ExtraActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final todosBloc = BlocProvider.of<TodosBloc>(context);
-    return BlocBuilder(
-      bloc: todosBloc,
-      builder: (BuildContext context, TodosState state) {
+    return BlocBuilder<TodosBloc, TodosState>(
+      builder: (context, state) {
         if (state is TodosLoaded) {
           bool allComplete = (todosBloc.currentState as TodosLoaded)
               .todos
@@ -1475,15 +1471,10 @@ class FilteredTodos extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final todosBloc = BlocProvider.of<TodosBloc>(context);
-    final filteredTodosBloc = BlocProvider.of<FilteredTodosBloc>(context);
     final localizations = ArchSampleLocalizations.of(context);
 
-    return BlocBuilder(
-      bloc: filteredTodosBloc,
-      builder: (
-        BuildContext context,
-        FilteredTodosState state,
-      ) {
+    return BlocBuilder<FilteredTodosBloc, FilteredTodosState>(
+      builder: (context, state) {
         if (state is FilteredTodosLoading) {
           return LoadingIndicator(key: ArchSampleKeys.todosLoading);
         } else if (state is FilteredTodosLoaded) {
@@ -1696,11 +1687,9 @@ class Stats extends StatelessWidget {
   Stats({Key key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final StatsBloc statsBloc = BlocProvider.of<StatsBloc>(context);
-    return BlocBuilder(
-      bloc: statsBloc,
-      builder: (BuildContext context, StatsState state) {
+  Widget build(BuildContext context) {    
+    return BlocBuilder<StatsBloc, StatsState>(      
+      builder: (context, state) {
         if (state is StatsLoading) {
           return LoadingIndicator(key: FlutterTodosKeys.statsLoadingIndicator);
         } else if (state is StatsLoaded) {
@@ -1779,7 +1768,7 @@ void main() {
 
 ?> **Note:** We are setting our BlocSupervisor's delegate to the `SimpleBlocDelegate` we created earlier so that we can hook into all transitions and errors.
 
-?> **Note:** We are also wrapping our `TodosApp` widget in a `BlocProvider` which manages initializing, disposing, and providing the `TodosBloc` to our entire widget tree from [flutter_bloc](https://pub.dartlang.org/packages/flutter_bloc). We immediately dispatch the `LoadTodos` event in order to request the latest todos.
+?> **Note:** We are also wrapping our `TodosApp` widget in a `BlocProvider` which manages initializing, disposing, and providing the `TodosBloc` to our entire widget tree from [flutter_bloc](https://pub.dev/packages/flutter_bloc). We immediately dispatch the `LoadTodos` event in order to request the latest todos.
 
 Next, let's implement our `TodosApp` widget.
 
@@ -1836,7 +1825,7 @@ The `TodosApp` has two routes:
 - `Home` - which renders a `HomeScreen`
 - `AddTodo` - which renders a `AddEditScreen` with `isEditing` set to `false`.
 
-The `TodosApp` also makes the `TabBloc`, `FilteredTodosBloc`, and `StatsBloc` available to the widgets in its subtree by using the `MultiBlocProvider` widget from [flutter_bloc](https://pub.dartlang.org/packages/flutter_bloc).
+The `TodosApp` also makes the `TabBloc`, `FilteredTodosBloc`, and `StatsBloc` available to the widgets in its subtree by using the `MultiBlocProvider` widget from [flutter_bloc](https://pub.dev/packages/flutter_bloc).
 
 ```dart
 MultiBlocProvider(
@@ -1953,6 +1942,6 @@ class TodosApp extends StatelessWidget {
 }
 ```
 
-That’s all there is to it! We’ve now successfully implemented a todos app in flutter using the [bloc](https://pub.dartlang.org/packages/bloc) and [flutter_bloc](https://pub.dartlang.org/packages/flutter_bloc) packages and we’ve successfully separated our presentation layer from our business logic.
+That’s all there is to it! We’ve now successfully implemented a todos app in flutter using the [bloc](https://pub.dev/packages/bloc) and [flutter_bloc](https://pub.dev/packages/flutter_bloc) packages and we’ve successfully separated our presentation layer from our business logic.
 
 The full source for this example can be found [here](https://github.com/felangel/Bloc/tree/master/examples/flutter_todos).

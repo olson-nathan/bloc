@@ -27,7 +27,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_bloc: ^0.19.0
+  flutter_bloc: ^0.21.0
   meta: ^1.1.6
   equatable: ^0.2.0
 
@@ -79,7 +79,7 @@ class UserRepository {
 }
 ```
 
-?> **Note**: Our user repository is just mocking all of the different implementations for the sake of simplicity but in a real application you might inject a [HttpClient](https://pub.dartlang.org/packages/http) as well as something like [Flutter Secure Storage](https://pub.dartlang.org/packages/flutter_secure_storage) in order to request tokens and read/write them to keystore/keychain.
+?> **Note**: Our user repository is just mocking all of the different implementations for the sake of simplicity but in a real application you might inject a [HttpClient](https://pub.dev/packages/http) as well as something like [Flutter Secure Storage](https://pub.dev/packages/flutter_secure_storage) in order to request tokens and read/write them to keystore/keychain.
 
 ## Authentication States
 
@@ -131,7 +131,7 @@ class AuthenticationLoading extends AuthenticationState {
 }
 ```
 
-?> **Note**: The [`equatable`](https://pub.dartlang.org/packages/equatable) package is used in order to be able to compare two instances of `AuthenticationState`. By default, `==` returns true only if the two objects are the same instance.
+?> **Note**: The [`equatable`](https://pub.dev/packages/equatable) package is used in order to be able to compare two instances of `AuthenticationState`. By default, `==` returns true only if the two objects are the same instance.
 
 ?> **Note**: `toString` is overridden to make it easier to read an `AuthenticationState` when printing it to the console or in `Transitions`.
 
@@ -540,8 +540,7 @@ class _LoginFormState extends State<LoginForm> {
       ));
     }
 
-    return BlocListener(
-      bloc: _loginBloc,
+    return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state is LoginFailure) {
           Scaffold.of(context).showSnackBar(
@@ -552,7 +551,7 @@ class _LoginFormState extends State<LoginForm> {
           );
         }
       },
-      child: BlocBuilder<LoginEvent, LoginState>(
+      child: BlocBuilder<LoginBloc, LoginState>(
         bloc: _loginBloc,
         builder: (
           BuildContext context,
@@ -666,9 +665,8 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: BlocBuilder<AuthenticationEvent, AuthenticationState>(
-        bloc: BlocProvider.of<AuthenticationBloc>(context),
-        builder: (BuildContext context, AuthenticationState state) {
+      home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+        builder: (context, state) {
           if (state is AuthenticationUninitialized) {
             return SplashPage();
           }

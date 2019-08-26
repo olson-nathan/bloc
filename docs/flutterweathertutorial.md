@@ -28,7 +28,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_bloc: ^0.19.0
+  flutter_bloc: ^0.21.0
   http: ^0.12.0
   equatable: ^0.2.0
 
@@ -385,7 +385,7 @@ class Weather extends Equatable {
 }
 ```
 
-?> We extend [`Equatable`](https://pub.dartlang.org/packages/equatable) so that we can compare `Weather` instances. By default, the equality operator returns true if and only if this and other are the same instance.
+?> We extend [`Equatable`](https://pub.dev/packages/equatable) so that we can compare `Weather` instances. By default, the equality operator returns true if and only if this and other are the same instance.
 
 There's not much happening here; we are just defining our `Weather` data model and implementing a `fromJson` method so that we can create a `Weather` instance from the API response body and creating a method that maps the raw string to a `WeatherCondition` in our enum.
 
@@ -787,9 +787,8 @@ class Weather extends StatelessWidget {
         ],
       ),
       body: Center(
-        child: BlocBuilder(
-          bloc: weatherBloc,
-          builder: (_, WeatherState state) {
+        child: BlocBuilder<WeatherBloc, WeatherState>(
+          builder: (context, state) {
             if (state is WeatherEmpty) {
               return Center(child: Text('Please Select a Location'));
             }
@@ -1410,9 +1409,8 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder(
-      bloc: BlocProvider.of<ThemeBloc>(context),
-      builder: (_, ThemeState themeState) {
+    return BlocBuilder<ThemeBloc, ThemeState>(
+      builder: (context, themeState) {
         return MaterialApp(
           title: 'Flutter Weather',
           theme: themeState.theme,
@@ -1520,9 +1518,8 @@ class _WeatherState extends State<Weather> {
         ],
       ),
       body: Center(
-        child: BlocListener(
-          bloc: weatherBloc,
-          listener: (BuildContext context, WeatherState state) {
+        child: BlocListener<WeatherBloc, WeatherState>(          
+          listener: (context, state) {
             if (state is WeatherLoaded) {
               BlocProvider.of<ThemeBloc>(context).dispatch(
                 WeatherChanged(condition: state.weather.condition),
@@ -1531,9 +1528,8 @@ class _WeatherState extends State<Weather> {
               _refreshCompleter = Completer();
             }
           },
-          child: BlocBuilder(
-            bloc: weatherBloc,
-            builder: (_, WeatherState state) {
+          child: BlocBuilder<WeatherBloc, WeatherState>(
+            builder: (context, state) {
               if (state is WeatherEmpty) {
                 return Center(child: Text('Please Select a Location'));
               }
@@ -1543,9 +1539,8 @@ class _WeatherState extends State<Weather> {
               if (state is WeatherLoaded) {
                 final weather = state.weather;
 
-                return BlocBuilder(
-                  bloc: BlocProvider.of<ThemeBloc>(context),
-                  builder: (_, ThemeState themeState) {
+                return BlocBuilder<ThemeBloc, ThemeState>(
+                  builder: (context, themeState) {
                     return GradientContainer(
                       color: themeState.color,
                       child: RefreshIndicator(
@@ -1703,9 +1698,8 @@ class Settings extends StatelessWidget {
       appBar: AppBar(title: Text('Settings')),
       body: ListView(
         children: <Widget>[
-          BlocBuilder(
-              bloc: settingsBloc,
-              builder: (_, SettingsState state) {
+          BlocBuilder<SettingsBloc, SettingsState>(
+              builder: (context, state) {
                 return ListTile(
                   title: Text(
                     'Temperature Units',
@@ -1797,9 +1791,8 @@ class _WeatherState extends State<Weather> {
         ],
       ),
       body: Center(
-        child: BlocListener(
-          bloc: weatherBloc,
-          listener: (BuildContext context, WeatherState state) {
+        child: BlocListener<WeatherBloc, WeatherState>(          
+          listener: (context, state) {
             if (state is WeatherLoaded) {
               BlocProvider.of<ThemeBloc>(context).dispatch(
                 WeatherChanged(condition: state.weather.condition),
@@ -1808,9 +1801,8 @@ class _WeatherState extends State<Weather> {
               _refreshCompleter = Completer();
             }
           },
-          child: BlocBuilder(
-            bloc: weatherBloc,
-            builder: (_, WeatherState state) {
+          child: BlocBuilder<WeatherBloc, WeatherState>(
+            builder: (context, state) {
               if (state is WeatherEmpty) {
                 return Center(child: Text('Please Select a Location'));
               }
@@ -1820,9 +1812,8 @@ class _WeatherState extends State<Weather> {
               if (state is WeatherLoaded) {
                 final weather = state.weather;
 
-                return BlocBuilder(
-                  bloc: BlocProvider.of<ThemeBloc>(context),
-                  builder: (_, ThemeState themeState) {
+                return BlocBuilder<ThemeBloc, ThemeState>(
+                  builder: (context, themeState) {
                     return GradientContainer(
                       color: themeState.color,
                       child: RefreshIndicator(
@@ -1974,9 +1965,8 @@ class CombinedWeatherTemperature extends StatelessWidget {
             ),
             Padding(
               padding: EdgeInsets.all(20.0),
-              child: BlocBuilder(
-                bloc: BlocProvider.of<SettingsBloc>(context),
-                builder: (_, SettingsState state) {
+              child: BlocBuilder<SettingsBloc, SettingsState>(
+                builder: (context, state) {
                   return Temperature(
                     temperature: weather.temp,
                     high: weather.maxTemp,
@@ -2004,6 +1994,6 @@ class CombinedWeatherTemperature extends StatelessWidget {
 }
 ```
 
-That’s all there is to it! We’ve now successfully implemented a weather app in flutter using the [bloc](https://pub.dartlang.org/packages/bloc) and [flutter_bloc](https://pub.dartlang.org/packages/flutter_bloc) packages and we’ve successfully separated our presentation layer from our business logic.
+That’s all there is to it! We’ve now successfully implemented a weather app in flutter using the [bloc](https://pub.dev/packages/bloc) and [flutter_bloc](https://pub.dev/packages/flutter_bloc) packages and we’ve successfully separated our presentation layer from our business logic.
 
 The full source for this example can be found [here](https://github.com/felangel/Bloc/tree/master/examples/flutter_weather).

@@ -6,9 +6,9 @@
 
 Bloc consists of several pub packages:
 
-- [bloc](https://pub.dartlang.org/packages/bloc) - Core bloc library
-- [flutter_bloc](https://pub.dartlang.org/packages/flutter_bloc) - Powerful Flutter Widgets built to work with bloc in order to build fast, reactive mobile applications.
-- [angular_bloc](https://pub.dartlang.org/packages/angular_bloc) - Powerful Angular Components built to work with bloc in order to build fast, reactive web applications.
+- [bloc](https://pub.dev/packages/bloc) - Core bloc library
+- [flutter_bloc](https://pub.dev/packages/flutter_bloc) - Powerful Flutter Widgets built to work with bloc in order to build fast, reactive mobile applications.
+- [angular_bloc](https://pub.dev/packages/angular_bloc) - Powerful Angular Components built to work with bloc in order to build fast, reactive web applications.
 
 ## Installation
 
@@ -16,22 +16,22 @@ The first thing we need to do is add the bloc package to our `pubspec.yaml` as a
 
 ```yaml
 dependencies:
-  bloc: ^0.14.0
+  bloc: ^0.15.0
 ```
 
 For a [Flutter](https://flutter.io) application, we also need to add the flutter_bloc package to our `pubspec.yaml` as a dependency.
 
 ```yaml
 dependencies:
-  bloc: ^0.14.0
-  flutter_bloc: ^0.19.0
+  bloc: ^0.15.0
+  flutter_bloc: ^0.21.0
 ```
 
 For an [AngularDart](https://webdev.dartlang.org/angular) application, we also need to add the angular_bloc package to our `pubspec.yaml` as a dependency.
 
 ```yaml
 dependencies:
-  bloc: ^0.14.0
+  bloc: ^0.15.0
   angular_bloc: ^0.9.0
 ```
 

@@ -31,7 +31,7 @@ dependencies:
   cloud_firestore: ^0.9.7
   firebase_auth: ^0.8.1+4
   google_sign_in: ^4.0.1+1
-  flutter_bloc: ^0.19.0
+  flutter_bloc: ^0.21.0
   equatable: ^0.2.0
   meta: ^1.1.6
   font_awesome_flutter: ^8.4.0
@@ -54,7 +54,7 @@ then install all of the dependencies
 flutter packages get
 ```
 
-The last thing we need to do is follow the [firebase_auth usage instructions](https://pub.dartlang.org/packages/firebase_auth#usage) in order to hook up our application to firebase and enable [google_signin](https://pub.dartlang.org/packages/google_sign_in).
+The last thing we need to do is follow the [firebase_auth usage instructions](https://pub.dev/packages/firebase_auth#usage) in order to hook up our application to firebase and enable [google_signin](https://pub.dev/packages/google_sign_in).
 
 ## User Repository
 
@@ -268,7 +268,7 @@ class Unauthenticated extends AuthenticationState {
 }
 ```
 
-?> **Note**: The [`equatable`](https://pub.dartlang.org/packages/equatable) package is used in order to be able to compare two instances of `AuthenticationState`. By default, `==` returns true only if the two objects are the same instance.
+?> **Note**: The [`equatable`](https://pub.dev/packages/equatable) package is used in order to be able to compare two instances of `AuthenticationState`. By default, `==` returns true only if the two objects are the same instance.
 
 ?> **Note**: `toString` is overridden to make it easier to read an `AuthenticationState` when printing it to the console or in `Transitions`.
 
@@ -516,9 +516,8 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: BlocBuilder(
-        bloc: BlocProvider.of<AuthenticationBloc>(context),
-        builder: (BuildContext context, AuthenticationState state) {
+      home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+        builder: (context, state) {
           return Container();
         },
       ),
@@ -634,9 +633,8 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: BlocBuilder(
-        bloc: BlocProvider.of<AuthenticationBloc>(context),
-        builder: (BuildContext context, AuthenticationState state) {
+      home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+        builder: (context, state) {
           if (state is Uninitialized) {
             return SplashScreen();
           }
@@ -730,9 +728,8 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: BlocBuilder(
-        bloc: BlocProvider.of<AuthenticationBloc>(context),
-        builder: (BuildContext context, AuthenticationState state) {
+      home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+        builder: (context, state) {
           if (state is Uninitialized) {
             return SplashScreen();
           }
@@ -992,7 +989,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginState get initialState => LoginState.empty();
 
   @override
-  Stream<LoginState> transform(
+  Stream<LoginState> transformEvents(
     Stream<LoginEvent> events,
     Stream<LoginState> Function(LoginEvent event) next,
   ) {
@@ -1003,7 +1000,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     final debounceStream = observableStream.where((event) {
       return (event is EmailChanged || event is PasswordChanged);
     }).debounceTime(Duration(milliseconds: 300));
-    return super.transform(nonDebounceStream.mergeWith([debounceStream]), next);
+    return super.transformEvents(nonDebounceStream.mergeWith([debounceStream]), next);
   }
 
   @override
@@ -1058,7 +1055,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 }
 ```
 
-**Note:** We're overriding `transform` in order to debounce the `EmailChanged` and `PasswordChanged` events so that we give the user some time to stop typing before validating the input.
+**Note:** We're overriding `transformEvents` in order to debounce the `EmailChanged` and `PasswordChanged` events so that we give the user some time to stop typing before validating the input.
 
 We are using a `Validators` class to validate the email and password which we're going to implement next.
 
@@ -1172,9 +1169,8 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener(
-      bloc: _loginBloc,
-      listener: (BuildContext context, LoginState state) {
+    return BlocListener<LoginBloc, LoginState>(      
+      listener: (context, state) {
         if (state.isFailure) {
           Scaffold.of(context)
             ..hideCurrentSnackBar()
@@ -1207,9 +1203,8 @@ class _LoginFormState extends State<LoginForm> {
           BlocProvider.of<AuthenticationBloc>(context).dispatch(LoggedIn());
         }
       },
-      child: BlocBuilder(
-        bloc: _loginBloc,
-        builder: (BuildContext context, LoginState state) {
+      child: BlocBuilder<LoginBloc, LoginState>(
+        builder: (context, state) {
           return Padding(
             padding: EdgeInsets.all(20.0),
             child: Form(
@@ -1373,7 +1368,7 @@ class GoogleLoginButton extends StatelessWidget {
 
 Again, there's not too much going on here. We have another `StatelessWidget`; however, this time we are not exposing an `onPressed` callback. Instead, we're handling the onPressed internally and dispatching the `LoginWithGooglePressed` event to our `LoginBloc` which will handle the Google Sign In process.
 
-?> **Note:** We're using [font_awesome_flutter](https://pub.dartlang.org/packages/font_awesome_flutter) for the cool google icon.
+?> **Note:** We're using [font_awesome_flutter](https://pub.dev/packages/font_awesome_flutter) for the cool google icon.
 
 ## Create Account Button
 
@@ -1621,7 +1616,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   RegisterState get initialState => RegisterState.empty();
 
   @override
-  Stream<RegisterState> transform(
+  Stream<RegisterState> transformEvents(
     Stream<RegisterEvent> events,
     Stream<RegisterState> Function(RegisterEvent event) next,
   ) {
@@ -1632,7 +1627,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     final debounceStream = observableStream.where((event) {
       return (event is EmailChanged || event is PasswordChanged);
     }).debounceTime(Duration(milliseconds: 300));
-    return super.transform(nonDebounceStream.mergeWith([debounceStream]), next);
+    return super.transformEvents(nonDebounceStream.mergeWith([debounceStream]), next);
   }
 
   @override
@@ -1678,7 +1673,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
 }
 ```
 
-Just as before, we need to extend `Bloc`, implement `initialState`, and `mapEventToState`. Optionally, we are overriding `transform` again so that we can give users some time to finish typing before we validate the form.
+Just as before, we need to extend `Bloc`, implement `initialState`, and `mapEventToState`. Optionally, we are overriding `transformEvents` again so that we can give users some time to finish typing before we validate the form.
 
 Now that the `RegisterBloc` is fully functional, we just need to build out the presentation layer.
 
@@ -1757,9 +1752,8 @@ class _RegisterFormState extends State<RegisterForm> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener(
-      bloc: _registerBloc,
-      listener: (BuildContext context, RegisterState state) {
+    return BlocListener<RegisterBloc, RegisterState>(      
+      listener: (context, state) {
         if (state.isSubmitting) {
           Scaffold.of(context)
             ..hideCurrentSnackBar()
@@ -1796,9 +1790,8 @@ class _RegisterFormState extends State<RegisterForm> {
             );
         }
       },
-      child: BlocBuilder(
-        bloc: _registerBloc,
-        builder: (BuildContext context, RegisterState state) {
+      child: BlocBuilder<RegisterBloc, RegisterState>(
+        builder: (context, state) {
           return Padding(
             padding: EdgeInsets.all(20),
             child: Form(
@@ -1944,9 +1937,8 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: BlocBuilder(
-        bloc: BlocProvider.of<AuthenticationBloc>(context),
-        builder: (BuildContext context, AuthenticationState state) {
+      home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+        builder: (context, state) {
           if (state is Uninitialized) {
             return SplashScreen();
           }

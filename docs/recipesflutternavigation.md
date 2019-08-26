@@ -81,9 +81,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: BlocBuilder<MyEvent, MyState>(
-        bloc: BlocProvider.of<MyBloc>(context),
-        builder: (BuildContext context, MyState state) {
+      home: BlocBuilder<MyBloc, MyState>(
+        builder: (context, state) {
           if (state is StateA) {
             return PageA();
           }
@@ -185,8 +184,7 @@ class PageA extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final myBloc = BlocProvider.of<MyBloc>(context);
-    return BlocListener(
-      bloc: myBloc,
+    return BlocListener<MyBloc, MyState>(
       listener: (BuildContext context, MyState state) {
         if (state is StateB) {
           Navigator.of(context).pushNamed('/pageB');

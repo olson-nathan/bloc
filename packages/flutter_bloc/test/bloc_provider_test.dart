@@ -125,7 +125,7 @@ class CounterPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text('Counter')),
-      body: BlocBuilder<CounterEvent, int>(
+      body: BlocBuilder<CounterBloc, int>(
         bloc: _counterBloc,
         builder: (BuildContext context, int count) {
           if (onBuild != null) {
@@ -189,7 +189,9 @@ class CounterBloc extends Bloc<CounterEvent, int> {
 
   @override
   int get hashCode =>
-      initialState.hashCode ^ mapEventToState.hashCode ^ transform.hashCode;
+      initialState.hashCode ^
+      mapEventToState.hashCode ^
+      transformEvents.hashCode;
 
   @override
   void dispose() {
@@ -232,6 +234,25 @@ void main() {
       final Text _counterText = _counterFinder.evaluate().first.widget as Text;
       expect(_counterText.data, '0');
     });
+
+    testWidgets(
+      'passes bloc to children within same build',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: BlocProvider(
+                builder: (context) => CounterBloc(),
+                child: BlocBuilder<CounterBloc, int>(
+                  builder: (context, state) => Text('state: $state'),
+                ),
+              ),
+            ),
+          ),
+        );
+        expect(find.text('state: 0'), findsOneWidget);
+      },
+    );
 
     testWidgets('calls dispose on bloc automatically',
         (WidgetTester tester) async {
